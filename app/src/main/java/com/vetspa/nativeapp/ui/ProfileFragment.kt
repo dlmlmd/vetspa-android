@@ -24,7 +24,7 @@ class ProfileFragment : Fragment() {
 
         val prefs = requireContext().getSharedPreferences("vetspa_user", Context.MODE_PRIVATE)
         binding.userName.text = prefs.getString("fullname", prefs.getString("username", ""))
-        binding.userRole.text = prefs.getString("role", "").uppercase()
+        binding.userRole.text = prefs.getString("role", "")?.uppercase() ?: ""
         binding.userUsername.text = prefs.getString("username", "")
         binding.userEmail.text = prefs.getString("email", "—")
         binding.userProfileCode.text = prefs.getString("profile_code", "—")
