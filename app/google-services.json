@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "467643370028",
+    "project_id": "vetspa-e5074",
+    "storage_bucket": "vetspa-e5074.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:467643370028:android:7578007d4c4a6b53719f89",
+        "android_client_info": {
+          "package_name": "com.vetspa.nativeapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDkp3mRueVuPhFTjdnH3fmm6iNN0ajxcxY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
