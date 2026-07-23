@@ -73,10 +73,11 @@ class LoginActivity : AppCompatActivity() {
                 withContext(Dispatchers.Main) {
                     binding.loginBtn.isEnabled = true
                     binding.loginBtn.text = "Đăng nhập"
-                    if (e.message?.contains("Unable to resolve host") == true) {
-                        showError("Không thể kết nối máy chủ")
-                    } else {
-                        showError("Lỗi kết nối: ${e.message}")
+                    val msg = e.message ?: ""
+                    when {
+                        msg.contains("Unable to resolve host") -> showError("Không thể kết nối máy chủ")
+                        msg.contains("timeout") -> showError("Hết thời gian kết nối, thử lại")
+                        else -> showError("Lỗi: $msg")
                     }
                 }
             }

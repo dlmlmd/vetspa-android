@@ -7,6 +7,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import com.google.gson.GsonBuilder
 import com.google.gson.annotations.SerializedName
 import retrofit2.http.*
 import java.util.concurrent.TimeUnit
@@ -99,11 +100,15 @@ object ApiClient {
         .cookieJar(MyCookieJar())
         .build()
 
+    private val gson = GsonBuilder()
+        .setLenient()
+        .create()
+
     val api: VetSpaApi by lazy {
         Retrofit.Builder()
             .baseUrl(BuildConfig.API_BASE_URL)
             .client(okHttp)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
             .create(VetSpaApi::class.java)
     }

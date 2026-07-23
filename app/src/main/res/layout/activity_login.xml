@@ -41,13 +41,17 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
             android:hint="Tên đăng nhập"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            app:boxStrokeColor="#0074e0"
+            app:hintTextColor="#0074e0"
+            app:boxBackgroundColor="#ffffff">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/usernameInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="text"
+                android:textColor="#1a3c34"
                 android:imeOptions="actionNext" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -58,13 +62,16 @@
             android:layout_marginTop="16dp"
             android:hint="Mật khẩu"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            app:passwordToggleEnabled="true">
+            app:passwordToggleEnabled="true"
+            app:boxStrokeColor="#0074e0"
+            app:hintTextColor="#0074e0">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/passwordInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"
+                android:textColor="#1a3c34"
                 android:imeOptions="actionDone" />
         </com.google.android.material.textfield.TextInputLayout>
 
