@@ -4,7 +4,6 @@ import com.vetspa.nativeapp.BuildConfig
 import com.vetspa.nativeapp.data.model.*
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -90,12 +89,16 @@ data class Notification(
 )
 
 object ApiClient {
-    private val logging = HttpLoggingInterceptor().apply {
-        level = HttpLoggingInterceptor.Level.BODY
-    }
-
     private val okHttp = OkHttpClient.Builder()
-        .addInterceptor(logging)
+        .addInterceptor { chain ->
+            chain.proceed(chain.request().newBuilder()
+                .header("User-Agent", "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.6422.165 Mobile Safari/537.36 VetSpaNative/1.0")
+                .header("Accept", "application/json, text/plain, */*")
+                .header("Accept-Language", "vi-VN,vi;q=0.9,en;q=0.8")
+                .header("Referer", BuildConfig.WEB_APP_URL)
+                .header("Sec-Fetch-Site", "same-origin")
+                .build())
+        }
         .connectTimeout(30, TimeUnit.SECONDS)
         .readTimeout(30, TimeUnit.SECONDS)
         .cookieJar(MyCookieJar())
