@@ -39,35 +39,56 @@
 | `HUONG_DAN.md` | Hướng dẫn chi tiết từ tạo repo → build |
 | `Agent.md` | File này |
 
-### ✅ Bước 1 — Google Services (2026-07-23)
+### ✅ Bước 1 — Google Services + CI build APK (2026-07-23)
 
 - Tạo placeholder google-services.json (cấu trúc đúng, package `com.vetspa.nativeapp`)
 - CI đọc từ secret `GOOGLESERVICES_JSON` thay thế placeholder
+
+### ✅ Bước 2 — Push GitHub + Fix build (2026-07-23)
+
+- Push code lên `dlmlmd/vetspa-android`
+- Fix: `paths` filter không trigger workflow → bỏ filter
+- Fix: thiếu Gradle wrapper → tải `gradlew`, `gradlew.bat`, `gradle-wrapper.jar`
+- Fix: `./gradlew: Permission denied` → thêm `chmod +x gradlew`
+
+### ✅ Bước 3 — Fix lỗi compile Kotlin (2026-07-23)
+
+- `MyCookieJar.kt`: `url.host()` → `url.host` (property)
+- `VetSpaApi.kt`: xoá `@Body` thừa, thêm `import com.google.gson.annotations.SerializedName`
+- `MainActivity.kt`: `settings` → `this.userAgentString` (apply context)
+
+### ✅ Bước 4 — WebView hoàn chỉnh + icon (2026-07-23)
+
+- `activity_main.xml`: TextView → WebView full màn
+- `MainActivity.kt`: WebView setup (JS, cookie, bridge, FCM injection)
+- `app/build.gradle.kts`: thêm `BuildConfig.WEB_APP_URL`
+- Icon lá xanh (`#10b981`) background kem
+
+### 🟢 Kết quả thực tế (2026-07-23)
+- APK build thành công qua GitHub Actions
+- Cài lên máy thật, WebView load được `index2.php` từ backend
+- Ứng dụng hoạt động
+
+### ✅ Bước 5 — Native Login + Bottom Navigation (2026-07-23)
+
+- **LoginActivity**: màn hình native đăng nhập (Material OutlinedTextInput + button xanh)
+- Retrofit gọi `auth_api.php?action=login` (FormUrlEncoded)
+- Lưu user vào SharedPreferences (id, fullname, role, email...)
+- **BottomNavigationView**: 3 tab (Trang chủ, Lịch của tôi, Tài khoản)
+- **HomeFragment**: WebView load `index2.php?from=android`
+- **BookingsFragment**: WebView load `bookings.php`
+- **ProfileFragment**: native UI hiển thị thông tin user + nút Đăng xuất
+- Đồng bộ cookie Retrofit → WebView qua `MyCookieJar.getSessionCookies()` → `CookieManager`
+- LoginActivity là LAUNCHER, MainActivity kiểm tra login ở onCreate
 
 ---
 
 ## Kế hoạch sẽ làm
 
-### ⏳ Bước 2 — Push lên GitHub
+### ⏳ Bước 6 — Deep link từ notification
 
-1. `cd D:\WinNMP\WWW\vetspa-android-native`
-2. `git init && git add . && git commit -m "init: VetSpa Android native app"`
-3. Tạo repo trên GitHub hoặc dùng `gh repo create`
-4. `git remote add origin <url> && git push -u origin main`
-5. Vào GitHub → Settings → Secrets → thêm `GOOGLESERVICES_JSON`
-
-### ⏳ Bước 3 — Fix build thử nghiệm
-
-1. Sửa `buildConfigField("String", "API_BASE_URL", "...")` với domain thật
-2. Local build: `./gradlew assembleDebug`
-3. Cài APK lên máy thật test login + load WebView
-
-### ⏳ Bước 4 — UI gốc Kotlin (native screens)
-
-- Thêm Jetpack Compose hoặc Fragment-based UI
-- Màn hình Login (dùng Retrofit login API)
-- Màn hình Dashboard (thống kê, nút mở WebView)
-- Navigation graph (NavComponent)
+- Khi nhận FCM → mở đúng tab/màn hình (lịch, tin nhắn...)
+- Xử lý `message.data` để lấy action + params
 
 ### ⏳ Bước 5 — Tích hợp đầy đủ API endpoints
 
