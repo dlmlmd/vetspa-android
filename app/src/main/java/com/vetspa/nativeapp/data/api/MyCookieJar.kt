@@ -9,11 +9,25 @@ import okhttp3.HttpUrl
 class MyCookieJar : CookieJar {
     companion object {
         private const val PREFS_NAME = "vetspa_cookies"
+        private const val KEY_COOKIES = "session_cookies"
+        private const val KEY_FCM_TOKEN = "fcm_token"
         private var prefs: SharedPreferences? = null
 
         fun init(context: Context) {
             prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         }
+
+        fun setSessionCookies(cookies: String) {
+            prefs?.edit()?.putString(KEY_COOKIES, cookies)?.apply()
+        }
+
+        fun getSessionCookies(): String? = prefs?.getString(KEY_COOKIES, null)
+
+        fun setFcmToken(token: String) {
+            prefs?.edit()?.putString(KEY_FCM_TOKEN, token)?.apply()
+        }
+
+        fun getFcmToken(): String? = prefs?.getString(KEY_FCM_TOKEN, null)
     }
 
     override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {

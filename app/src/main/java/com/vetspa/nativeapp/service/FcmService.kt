@@ -15,6 +15,7 @@ class FcmService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         Log.d(TAG, "FCM token: $token")
+        com.vetspa.nativeapp.data.api.MyCookieJar.setFcmToken(token)
         registerToken(token)
     }
 
