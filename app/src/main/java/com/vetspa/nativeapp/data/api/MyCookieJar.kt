@@ -24,7 +24,7 @@ class MyCookieJar : CookieJar {
         val raw = prefs?.getString("session_cookies", null) ?: return emptyList()
         return raw.split("; ").mapNotNull { pair ->
             val parts = pair.split("=", limit = 2)
-            if (parts.size == 2) Cookie.Builder().name(parts[0]).value(parts[1]).domain(url.host()).build() else null
+            if (parts.size == 2) Cookie.Builder().name(parts[0]).value(parts[1]).domain(url.host).build() else null
         }
     }
 }

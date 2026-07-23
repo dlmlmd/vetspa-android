@@ -21,7 +21,8 @@ Sau lệnh cuối, code tự động push lên `https://github.com/<USER>/vetspa
 
 > Nếu không dùng `gh`, tạo repo thủ công trên GitHub rồi:
 ```bash
-git remote add origin https://github.com/YOUR_USER/vetspa-android.git
+git remote add origin https://github.com/dlmlmd/vetspa-android.git
+git branch -M main
 git push -u origin main
 ```
 
