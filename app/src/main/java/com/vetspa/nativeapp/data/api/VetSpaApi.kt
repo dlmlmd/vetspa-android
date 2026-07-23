@@ -3,6 +3,7 @@ package com.vetspa.nativeapp.data.api
 import com.vetspa.nativeapp.BuildConfig
 import com.vetspa.nativeapp.data.model.*
 import okhttp3.OkHttpClient
+import okhttp3.ResponseBody
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -20,7 +21,7 @@ interface VetSpaApi {
     suspend fun login(
         @Field("username") username: String,
         @Field("password") password: String
-    ): Response<LoginResponse>
+    ): Response<ResponseBody>
 
     @GET("auth_api.php?action=me")
     suspend fun me(): Response<User>

@@ -6,9 +6,9 @@ import android.os.Bundle
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.snackbar.Snackbar
-import com.vetspa.nativeapp.BuildConfig
+import com.google.gson.Gson
 import com.vetspa.nativeapp.data.api.ApiClient
+import com.vetspa.nativeapp.data.model.LoginResponse
 import com.vetspa.nativeapp.data.model.User
 import com.vetspa.nativeapp.databinding.ActivityLoginBinding
 import kotlinx.coroutines.CoroutineScope
@@ -56,17 +56,26 @@ class LoginActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val resp = ApiClient.api.login(username, password)
+                val rawBody = if (resp.isSuccessful) resp.body()?.string() else resp.errorBody()?.string()
                 withContext(Dispatchers.Main) {
                     binding.loginBtn.isEnabled = true
                     binding.loginBtn.text = "Đăng nhập"
-                    if (resp.isSuccessful && resp.body()?.ok == true) {
-                        val user = resp.body()!!.user
-                        saveUser(user!!)
-                        Toast.makeText(this@LoginActivity, "Xin chào ${user.fullname ?: user.username}", Toast.LENGTH_SHORT).show()
-                        startActivity(Intent(this@LoginActivity, MainActivity::class.java))
-                        finish()
+                    if (rawBody != null) {
+                        try {
+                            val loginResp = Gson().fromJson(rawBody, LoginResponse::class.java)
+                            if (loginResp.ok && loginResp.user != null) {
+                                saveUser(loginResp.user)
+                                Toast.makeText(this@LoginActivity, "Xin chào ${loginResp.user.fullname ?: loginResp.user.username}", Toast.LENGTH_SHORT).show()
+                                startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+                                finish()
+                            } else {
+                                showError(loginResp.error ?: "Sai tên đăng nhập hoặc mật khẩu")
+                            }
+                        } catch (e: Exception) {
+                            showError("Phản hồi máy chủ: $rawBody")
+                        }
                     } else {
-                        showError(resp.body()?.error ?: "Sai tên đăng nhập hoặc mật khẩu")
+                        showError("Không có phản hồi từ máy chủ (${resp.code()})")
                     }
                 }
             } catch (e: Exception) {
