@@ -51,7 +51,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="text"
-                android:imeOptions="actionNext" />
+                android:imeOptions="actionNext"
+                android:textColor="#1a3c34"
+                android:textColorHint="#9ca3af" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -72,7 +74,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"
-                android:imeOptions="actionDone" />
+                android:imeOptions="actionDone"
+                android:textColor="#1a3c34"
+                android:textColorHint="#9ca3af" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -93,6 +97,7 @@
             android:text="Đăng nhập"
             android:textAllCaps="false"
             android:textSize="16sp"
+            android:textColor="#ffffff"
             app:cornerRadius="12dp"
             android:backgroundTint="@color/primary" />
 

@@ -19,7 +19,7 @@ android {
         buildConfigField("String", "API_BASE_URL", "\"https://spa.vetmedia.vn/api/\"")
 
         // Web frontend URL (cho WebView)
-        buildConfigField("String", "WEB_APP_URL", "\"https://spa.vetmedia.vn/index2.php\"")
+        buildConfigField("String", "WEB_APP_URL", "\"https://spa.vetmedia.vn/index.php\"")
     }
 
     buildFeatures {

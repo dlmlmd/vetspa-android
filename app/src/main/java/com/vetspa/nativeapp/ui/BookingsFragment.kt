@@ -28,7 +28,7 @@ class BookingsFragment : Fragment() {
         }
         wv.webViewClient = WebViewClient()
         wv.webChromeClient = WebChromeClient()
-        wv.loadUrl(BuildConfig.WEB_APP_URL.replace("index2.php", "bookings.php"))
+        wv.loadUrl(BuildConfig.WEB_APP_URL.replace("index.php", "bookings.php"))
         return binding.root
     }
 
