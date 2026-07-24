@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#ffffff">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Đặt lịch mới"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#1a3c34" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#e5e7eb"
+            android:layout_marginVertical="16dp" />
+
+        <!-- Ngày -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ngày"
+            android:textSize="13sp"
+            android:textColor="#6b7280"
+            android:textStyle="bold" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/formDateBtn"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="4dp"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:textAllCaps="false"
+            android:textColor="#1a3c34"
+            app:cornerRadius="8dp" />
+
+        <!-- Giờ -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal"
+            android:weightSum="2">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="6dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Giờ bắt đầu"
+                    android:textSize="13sp"
+                    android:textColor="#6b7280"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/formStartBtn"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="4dp"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:textAllCaps="false"
+                    android:textColor="#1a3c34"
+                    app:cornerRadius="8dp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="6dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Kết thúc"
+                    android:textSize="13sp"
+                    android:textColor="#6b7280"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/formEndBtn"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="4dp"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:textAllCaps="false"
+                    android:textColor="#6b7280"
+                    app:cornerRadius="8dp"
+                    android:enabled="false" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Giường + Nhân viên -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal"
+            android:weightSum="2">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="6dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Giường"
+                    android:textSize="13sp"
+                    android:textColor="#6b7280"
+                    android:textStyle="bold" />
+
+                <RadioGroup
+                    android:id="@+id/formBedGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:orientation="vertical">
+
+                    <RadioButton
+                        android:id="@+id/bed1"
+                        android:layout_width="match_parent"
+                        android:layout_height="44dp"
+                        android:text="Giường 1" />
+
+                    <RadioButton
+                        android:id="@+id/bed2"
+                        android:layout_width="match_parent"
+                        android:layout_height="44dp"
+                        android:text="Giường 2" />
+
+                    <RadioButton
+                        android:id="@+id/bed3"
+                        android:layout_width="match_parent"
+                        android:layout_height="44dp"
+                        android:text="Giường 3" />
+
+                    <RadioButton
+                        android:id="@+id/bed4"
+                        android:layout_width="match_parent"
+                        android:layout_height="44dp"
+                        android:text="Giường 4" />
+
+                </RadioGroup>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="6dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Nhân viên"
+                    android:textSize="13sp"
+                    android:textColor="#6b7280"
+                    android:textStyle="bold" />
+
+                <RadioGroup
+                    android:id="@+id/formStaffGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:orientation="vertical" />
+
+                <TextView
+                    android:id="@+id/formStaffLoading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Chọn ngày/giờ trước..."
+                    android:textSize="12sp"
+                    android:textColor="#9ca3af"
+                    android:padding="8dp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Gói dịch vụ -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Gói dịch vụ"
+            android:textSize="13sp"
+            android:textColor="#6b7280"
+            android:textStyle="bold" />
+
+        <RadioGroup
+            android:id="@+id/formPackageGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:orientation="vertical" />
+
+        <TextView
+            android:id="@+id/formPkgLoading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Đang tải gói..."
+            android:textSize="12sp"
+            android:textColor="#9ca3af"
+            android:padding="8dp" />
+
+        <!-- Ghi chú -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Ghi chú (không bắt buộc)"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            app:boxStrokeColor="#0074e0"
+            app:boxStrokeWidth="1.5dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/formNote"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Lỗi -->
+        <TextView
+            android:id="@+id/formError"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textSize="13sp"
+            android:textColor="#ef4444"
+            android:visibility="gone" />
+
+        <!-- Submit -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/formSubmitBtn"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="16dp"
+            android:text="Xác nhận đặt lịch"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            android:textColor="#ffffff"
+            app:cornerRadius="12dp"
+            android:backgroundTint="#0074e0" />
+
+    </LinearLayout>
+
+</ScrollView>

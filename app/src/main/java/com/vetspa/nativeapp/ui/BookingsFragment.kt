@@ -30,7 +30,9 @@ class BookingsFragment : Fragment() {
     private lateinit var emptyTitle: TextView
     private lateinit var emptySubtitle: TextView
     private val adapter = BookingListAdapter { booking ->
-        // TODO: mở detail bottom sheet
+        BookingDetailSheet(booking.id) {
+            loadBookings()
+        }.show(parentFragmentManager, "detail")
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
