@@ -67,6 +67,10 @@
             <TextView android:id="@+id/userEmail" android:textColor="#1a3c34" android:layout_width="0dp" android:layout_weight="2" />
         </TableRow>
         <TableRow android:paddingVertical="8dp">
+            <TextView android:text="SĐT" android:textColor="#9ca3af" android:layout_width="0dp" android:layout_weight="1" />
+            <TextView android:id="@+id/userPhone" android:textColor="#1a3c34" android:layout_width="0dp" android:layout_weight="2" />
+        </TableRow>
+        <TableRow android:paddingVertical="8dp">
             <TextView android:text="Mã HS" android:textColor="#9ca3af" android:layout_width="0dp" android:layout_weight="1" />
             <TextView android:id="@+id/userProfileCode" android:textColor="#1a3c34" android:layout_width="0dp" android:layout_weight="2" />
         </TableRow>

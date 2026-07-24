@@ -1,23 +1,29 @@
 package com.vetspa.nativeapp.ui
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.os.Build
+import android.net.Uri
 import android.os.Bundle
-import android.webkit.CookieManager
-import android.webkit.WebChromeClient
-import android.webkit.WebView
-import android.webkit.WebViewClient
+import android.view.inputmethod.EditorInfo
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.vetspa.nativeapp.BuildConfig
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.textfield.TextInputEditText
 import com.vetspa.nativeapp.R
+import com.vetspa.nativeapp.data.api.ApiClient
+import com.vetspa.nativeapp.data.model.LoginResponse
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class LoginActivity : AppCompatActivity() {
 
-    private lateinit var webView: WebView
+    private lateinit var usernameInput: TextInputEditText
+    private lateinit var passwordInput: TextInputEditText
+    private lateinit var errorText: TextView
+    private lateinit var loginBtn: MaterialButton
 
-    @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -30,71 +36,93 @@ class LoginActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_login)
 
-        // Xoá sạch cookie cũ trước khi login
-        CookieManager.getInstance().removeAllCookies(null)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            CookieManager.getInstance().flush()
+        usernameInput = findViewById(R.id.usernameInput)
+        passwordInput = findViewById(R.id.passwordInput)
+        errorText = findViewById(R.id.errorText)
+        loginBtn = findViewById(R.id.loginBtn)
+
+        passwordInput.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                performLogin()
+                true
+            } else false
         }
 
-        webView = findViewById(R.id.loginWebView)
-        webView.settings.apply {
-            javaScriptEnabled = true
-            domStorageEnabled = true
-            mixedContentMode = android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
-            userAgentString = this.userAgentString + " VetSpaNative/1.0"
+        loginBtn.setOnClickListener { performLogin() }
+
+        findViewById<TextView>(R.id.staffLoginLink)?.setOnClickListener {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://spa.vetmedia.vn/staff_login.php"))
+            startActivity(intent)
+        }
+    }
+
+    private fun performLogin() {
+        val username = usernameInput.text?.toString()?.trim() ?: ""
+        val password = passwordInput.text?.toString() ?: ""
+
+        if (username.isEmpty() || password.isEmpty()) {
+            showError("Vui lòng nhập tên đăng nhập và mật khẩu")
+            return
         }
 
-        webView.webViewClient = object : WebViewClient() {
-            override fun onPageFinished(view: WebView?, url: String?) {
-                super.onPageFinished(view, url)
-                // Khi thấy URL chứa index2.php → đã login thành công
-                if (url?.contains("index2.php") == true) {
-                    saveUserAndNavigate()
+        loginBtn.isEnabled = false
+        loginBtn.text = "Đang đăng nhập..."
+        errorText.visibility = android.view.View.GONE
+
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val resp = ApiClient.api.login(username, password)
+                withContext(Dispatchers.Main) {
+                    if (resp.isSuccessful) {
+                        val body = resp.body()
+                        if (body != null && body.ok && body.user != null) {
+                            saveUserAndNavigate(body.user)
+                        } else {
+                            showError(body?.error ?: "Đăng nhập thất bại")
+                        }
+                    } else {
+                        // Try to parse error from response body
+                        val errorBody = resp.errorBody()?.string()
+                        val msg = try {
+                            val gson = com.google.gson.Gson()
+                            val err = gson.fromJson(errorBody, LoginResponse::class.java)
+                            err.error ?: "Lỗi máy chủ (${resp.code()})"
+                        } catch (_: Exception) {
+                            "Lỗi máy chủ (${resp.code()})"
+                        }
+                        showError(msg)
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    showError("Lỗi kết nối: ${e.localizedMessage ?: "Không thể kết nối máy chủ"}")
+                }
+            } finally {
+                withContext(Dispatchers.Main) {
+                    loginBtn.isEnabled = true
+                    loginBtn.text = "Đăng nhập"
                 }
             }
-
-            override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
-                return false
-            }
         }
-
-        webView.webChromeClient = WebChromeClient()
-        webView.loadUrl(BuildConfig.WEB_APP_URL)
     }
 
-    private fun saveUserAndNavigate() {
-        // Lấy cookie từ WebView
-        val cookies = CookieManager.getInstance().getCookie(BuildConfig.WEB_APP_URL) ?: ""
-        getSharedPreferences("vetspa_cookies", Context.MODE_PRIVATE).edit()
-            .putString("session_cookies", cookies).apply()
+    private fun saveUserAndNavigate(user: com.vetspa.nativeapp.data.model.User) {
+        getSharedPreferences("vetspa_user", Context.MODE_PRIVATE).edit()
+            .putInt("user_id", user.id)
+            .putString("username", user.username)
+            .putString("fullname", user.fullname ?: user.username)
+            .putString("role", user.role)
+            .putString("email", user.email ?: "")
+            .putString("phone", user.phone ?: "")
+            .putString("profile_code", user.profileCode ?: "")
+            .apply()
 
-        // Inject JS lấy thông tin user từ trang
-        webView.evaluateJavascript(
-            "(function() {" +
-            "  var el = document.querySelector('.userbox span');" +
-            "  var name = el ? el.textContent.trim() : '';" +
-            "  var badge = document.querySelector('.badge');" +
-            "  var role = badge ? badge.textContent.trim() : 'customer';" +
-            "  return JSON.stringify({fullname: name, role: role});" +
-            "})()",
-            android.webkit.ValueCallback { raw ->
-                try {
-                    val gson = com.google.gson.Gson()
-                    val info = gson.fromJson(raw, Map::class.java)
-                    getSharedPreferences("vetspa_user", Context.MODE_PRIVATE).edit()
-                        .putInt("user_id", 1)
-                        .putString("username", info["fullname"]?.toString() ?: "")
-                        .putString("fullname", info["fullname"]?.toString() ?: "")
-                        .putString("role", info["role"]?.toString()?.lowercase() ?: "customer")
-                        .apply()
-                } catch (_: Exception) {}
-                startActivity(Intent(this@LoginActivity, MainActivity::class.java))
-                finish()
-            }
-        )
+        startActivity(Intent(this, MainActivity::class.java))
+        finish()
     }
 
-    override fun onBackPressed() {
-        if (webView.canGoBack()) webView.goBack() else super.onBackPressed()
+    private fun showError(msg: String) {
+        errorText.text = msg
+        errorText.visibility = android.view.View.VISIBLE
     }
 }

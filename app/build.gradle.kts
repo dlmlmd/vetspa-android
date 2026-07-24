@@ -16,10 +16,10 @@ android {
         versionName = "1.0"
 
         // API backend URL
-        buildConfigField("String", "API_BASE_URL", "\"https://vetspa.free.je/api/\"")
+        buildConfigField("String", "API_BASE_URL", "\"https://spa.vetmedia.vn/api/\"")
 
         // Web frontend URL (cho WebView)
-        buildConfigField("String", "WEB_APP_URL", "\"https://vetspa.free.je/index2.php\"")
+        buildConfigField("String", "WEB_APP_URL", "\"https://spa.vetmedia.vn/index2.php\"")
     }
 
     buildFeatures {

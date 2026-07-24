@@ -81,31 +81,56 @@
 - Đồng bộ cookie Retrofit → WebView qua `MyCookieJar.getSessionCookies()` → `CookieManager`
 - LoginActivity là LAUNCHER, MainActivity kiểm tra login ở onCreate
 
+### ⚠️ Vấn đề Cloudflare (2026-07-23)
+
+- Host `vetspa.free.je` có Cloudflare proxy (WAF) chặn bot
+- Retrofit/OkHttp gọi API thẳng bị 400 + JS challenge
+- Không thể dùng native Retrofit login khi có Cloudflare
+- **Giải pháp tạm thời:** LoginActivity dùng WebView load `index2.php`
+- WebView tự xử lý Cloudflare challenge → đăng nhập web → bắt cookie → qua MainActivity
+- **Giải pháp lâu dài:** Mua VPS riêng, tắt Cloudflare proxy để Retrofit hoạt động
+
+### 🟢 Kết quả thực tế (2026-07-23)
+- APK build thành công qua GitHub Actions
+- App chạy trên máy thật
+- WebView bypass Cloudflare OK
+- Retrofit tạm thời không dùng được (đợi VPS)
+
+### 🟢 Kết quả thực tế (2026-07-24) — VPS + Native Login
+- Đã mua VPS `spa.vetmedia.vn` — hết Cloudflare
+- Retrofit login hoạt động native, không cần WebView workaround
+- Cookie tự động lưu qua MyCookieJar, đồng bộ WebView
+- Login form Material Design đẹp, responsive
+- FCM token register hoạt động
+
 ---
 
-## Kế hoạch sẽ làm
+## Kế hoạch sắp tới
 
-### ⏳ Bước 6 — Deep link từ notification
+### ✅ Bước 6 — Mua VPS + chuyển hosting (2026-07-24)
 
-- Khi nhận FCM → mở đúng tab/màn hình (lịch, tin nhắn...)
-- Xử lý `message.data` để lấy action + params
+- Mua VPS tại spa.vetmedia.vn (hết Cloudflare)
+- Cập nhật `API_BASE_URL` → `https://spa.vetmedia.vn/api/`
+- Cập nhật `WEB_APP_URL` → `https://spa.vetmedia.vn/index2.php`
+- Cập nhật `network_security_config.xml` domain mới
+- Cập nhật `FcmService.kt` domain check
 
-### ⏳ Bước 5 — Tích hợp đầy đủ API endpoints
+### ✅ Bước 7 — Native Login thật (Retrofit) (2026-07-24)
 
-- Packages + Voucher + Trial Voucher screens
-- Kế toán (Accounting) charts
+- **ĐÃ XONG:** `activity_login.xml` — form Material Design OutlinedTextInput
+- **ĐÃ XONG:** `LoginActivity.kt` — Retrofit login + auto-save user/cookie
+- **ĐÃ XONG:** `VetSpaApi.kt` — login trả `Response<LoginResponse>` thay `ResponseBody`
+- **ĐÃ XONG:** `MyCookieJar.init()` trong `VetSpaApp.onCreate()`
+- **ĐÃ XONG:** Cookie đồng bộ Retrofit → WebView qua `syncCookiesToWebView()`
+- Staff login: mở browser ngoài (`staff_login.php`)
+- Lưu SharedPreferences: id, username, fullname, role, email, phone, profile_code
 
-### ⏳ Bước 6 — Push Notification full flow
+### ⏳ Bước 8 — Native API screens (kế hoạch)
 
-- Khi nhận FCM → mở deep link vào booking/tin nhắn cụ thể
-- Notification channel grouping (thông báo đặt lịch, khuyến mãi, hệ thống)
-
-### ⏳ Bước 7 — Tối ưu WebView
-
-- Cache WebView resources (Glide + OkHttp cache)
-- HTTPS tránh mixed content
-- Pull-to-refresh gesture
-- Loading progress bar
+- Packages + Voucher + Booking screens gốc Kotlin
+- Kế toán charts (ApexCharts hoặc MPAndroidChart)
+- Deep link từ FCM notification
+- Hiện tại HomeFragment + BookingsFragment vẫn dùng WebView (chờ UI phức tạp)
 
 ---
 

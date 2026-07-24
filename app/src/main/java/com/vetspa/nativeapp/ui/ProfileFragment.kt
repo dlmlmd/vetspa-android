@@ -27,6 +27,7 @@ class ProfileFragment : Fragment() {
         binding.userRole.text = prefs.getString("role", "")?.uppercase() ?: ""
         binding.userUsername.text = prefs.getString("username", "")
         binding.userEmail.text = prefs.getString("email", "—")
+        binding.userPhone.text = prefs.getString("phone", "—")
         binding.userProfileCode.text = prefs.getString("profile_code", "—")
 
         binding.logoutBtn.setOnClickListener {

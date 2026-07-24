@@ -37,9 +37,8 @@ class FcmService : FirebaseMessagingService() {
     }
 
     private fun registerToken(token: String) {
-        if (BuildConfig.API_BASE_URL.contains("yourdomain.com")) {
-            Log.w(TAG, "API_BASE_URL not configured")
-            return
+        if (BuildConfig.API_BASE_URL.contains("spa.vetmedia.vn")) {
+            Log.d(TAG, "Registering FCM token...")
         }
         CoroutineScope(Dispatchers.IO).launch {
             try {

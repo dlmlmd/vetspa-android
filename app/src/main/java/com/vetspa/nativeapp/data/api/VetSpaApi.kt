@@ -3,7 +3,6 @@ package com.vetspa.nativeapp.data.api
 import com.vetspa.nativeapp.BuildConfig
 import com.vetspa.nativeapp.data.model.*
 import okhttp3.OkHttpClient
-import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -20,7 +19,7 @@ interface VetSpaApi {
     suspend fun login(
         @Field("username") username: String,
         @Field("password") password: String
-    ): Response<ResponseBody>
+    ): Response<LoginResponse>
 
     @GET("auth_api.php?action=me")
     suspend fun me(): Response<User>
