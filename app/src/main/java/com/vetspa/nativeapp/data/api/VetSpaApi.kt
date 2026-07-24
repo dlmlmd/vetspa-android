@@ -1,5 +1,6 @@
 package com.vetspa.nativeapp.data.api
 
+import com.vetspa.nativeapp.BuildConfig
 import com.vetspa.nativeapp.data.model.*
 import okhttp3.OkHttpClient
 import retrofit2.Response
