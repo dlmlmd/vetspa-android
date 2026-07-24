@@ -103,11 +103,6 @@ data class MyBookingsResponse(
     val error: String? = null
 )
 
-data class DateGroup(
-    val date: String,
-    val items: List<Booking>
-)
-
 data class AvailableBedsResponse(
     val ok: Boolean,
     val beds: List<Int>? = null,

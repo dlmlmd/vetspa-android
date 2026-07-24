@@ -29,6 +29,11 @@ data class User(
     @SerializedName("profile_code") val profileCode: String? = null
 )
 
+data class DateGroup(
+    val date: String,
+    val items: List<Booking>
+)
+
 data class Booking(
     val id: Int,
     @SerializedName("staff_id") val staffId: Int? = null,
