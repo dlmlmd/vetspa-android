@@ -75,7 +75,7 @@
 - Retrofit gọi `auth_api.php?action=login` (FormUrlEncoded)
 - Lưu user vào SharedPreferences (id, fullname, role, email...)
 - **BottomNavigationView**: 3 tab (Trang chủ, Lịch của tôi, Tài khoản)
-- **HomeFragment**: WebView load `index2.php?from=android`
+- **HomeFragment**: WebView load `index.php?from=android`
 - **BookingsFragment**: WebView load `bookings.php`
 - **ProfileFragment**: native UI hiển thị thông tin user + nút Đăng xuất
 - Đồng bộ cookie Retrofit → WebView qua `MyCookieJar.getSessionCookies()` → `CookieManager`
@@ -86,7 +86,7 @@
 - Host `vetspa.free.je` có Cloudflare proxy (WAF) chặn bot
 - Retrofit/OkHttp gọi API thẳng bị 400 + JS challenge
 - Không thể dùng native Retrofit login khi có Cloudflare
-- **Giải pháp tạm thời:** LoginActivity dùng WebView load `index2.php`
+- **Giải pháp tạm thời:** LoginActivity dùng WebView load `index.php`
 - WebView tự xử lý Cloudflare challenge → đăng nhập web → bắt cookie → qua MainActivity
 - **Giải pháp lâu dài:** Mua VPS riêng, tắt Cloudflare proxy để Retrofit hoạt động
 
@@ -111,7 +111,7 @@
 
 - Mua VPS tại spa.vetmedia.vn (hết Cloudflare)
 - Cập nhật `API_BASE_URL` → `https://spa.vetmedia.vn/api/`
-- Cập nhật `WEB_APP_URL` → `https://spa.vetmedia.vn/index2.php`
+- Cập nhật `WEB_APP_URL` → `https://spa.vetmedia.vn/index.php`
 - Cập nhật `network_security_config.xml` domain mới
 - Cập nhật `FcmService.kt` domain check
 

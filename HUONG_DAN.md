@@ -121,20 +121,48 @@ vetspa-android-native/
 
 ---
 
-## VI. API có sẵn (dùng chung với PHP backend)
+## VI. API dùng cho Android Native
 
-| Endpoint | Method | Mô tả |
-|----------|--------|-------|
-| `auth_api.php?action=login` | POST | Đăng nhập (username, password) |
-| `auth_api.php?action=me` | GET | Lấy thông tin user hiện tại |
-| `auth_api.php?action=logout` | POST | Đăng xuất |
-| `booking_api.php?action=my` | GET | Lịch của tôi |
-| `booking_api.php?action=create` | POST | Tạo lịch mới |
-| `staff_api.php?action=available` | GET | Nhân viên rảnh |
-| `staff_api.php?action=list` | GET | Tất cả nhân viên |
-| `packages_api.php?action=list` | GET | Danh sách gói dịch vụ |
-| `packages_api.php?action=my` | GET | Gói đã mua |
-| `fcm_api.php?action=register` | POST | Đăng ký FCM token |
-| `notification_api.php?action=poll` | GET | Kiểm tra thông báo mới |
+Android app gọi riêng các endpoint `android_*` — tách biệt hoàn toàn khỏi API web, không ảnh hưởng backend hiện tại.
 
-Xem chi tiết tại CLAUDE.md của project PHP gốc.
+### Android Auth API — `android_auth_api.php`
+
+| Action | Method | Input | Output |
+|--------|--------|-------|--------|
+| `login` | POST | `{username, password}` (JSON body) | `{ok, user: {id, username, fullname, role, email, phone, profile_code}}` |
+| `me` | GET | — | `{ok, user: {...}}` |
+| `logout` | POST | — | `{ok}` |
+| `register_fcm` | POST | `{token, platform}` | `{ok}` |
+
+### Android Booking API — `android_booking_api.php`
+
+| Action | Method | Input | Output |
+|--------|--------|-------|--------|
+| `my_bookings` | GET | — | `{ok, bookings: [{date, items: [Booking]}]}` — nhóm theo ngày |
+| `available_beds` | GET | `start, end` | `{ok, beds: [1,3,4], total_beds, booked_beds}` |
+| `create` | POST | `{staff_id, bed_id, start_time, end_time, package_id, note?}` | `{ok, booking}` — 2 lớp chống trùng |
+| `cancel` | POST | `{booking_id}` | `{ok}` — hoàn trả 1 buổi |
+| `detail` | GET | `id` | `{ok, booking: {staff_name, staff_phone, staff_avatar, ...}}` |
+
+### Android Staff API — `android_staff_api.php`
+
+| Action | Method | Input | Output |
+|--------|--------|-------|--------|
+| `available` | GET | `start, end` | `{ok, staff: [...], busy_staff_ids}` — có `is_favorite` |
+| `list` | GET | — | `{ok, staff: [...]}` — tất cả NV |
+
+### Android Packages API — `android_packages_api.php`
+
+| Action | Method | Input | Output |
+|--------|--------|-------|--------|
+| `list` | GET | — | `{ok, packages: [{id, name, price, total_sessions, duration_per_session, ...}]}` |
+| `my` | GET | — | `{ok, packages: [{package_id, package_name, sessions_remaining, sessions, status}]}` |
+
+### Ghi chú quan trọng
+
+- **Cookie:** Retrofit tự động đính kèm session cookie qua `MyCookieJar` (dùng chung với WebView)
+- **Conflict 2 lớp:** `available_beds` + `available_staff` chặn client → server validate lại → 409
+- **Không sửa API gốc:** Mọi endpoint `android_*` đều là file mới, không ảnh hưởng web
+- **Base URL:** `https://spa.vetmedia.vn/api/` (cấu hình trong `BuildConfig.API_BASE_URL`)
+
+Xem chi tiết backend tại `CLAUDE.md` của project PHP gốc (thư mục `D:\WinNMP\WWW\vetspa\`).
