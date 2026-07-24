@@ -20,8 +20,7 @@ import kotlinx.coroutines.withContext
 
 class BookingsFragment : Fragment() {
 
-    private var _view: View? = null
-    private val view get() = _view!!
+    private var _root: View? = null
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var swipeRefresh: SwipeRefreshLayout
@@ -35,15 +34,16 @@ class BookingsFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _view = inflater.inflate(R.layout.fragment_bookings, container, false)
+        val v = inflater.inflate(R.layout.fragment_bookings, container, false)
+        _root = v
 
-        recyclerView = view.findViewById(R.id.recyclerView)
-        swipeRefresh = view.findViewById(R.id.swipeRefresh)
-        emptyState = view.findViewById(R.id.emptyState)
-        loadingBar = view.findViewById(R.id.loadingBar)
-        emptyIcon = view.findViewById(R.id.emptyIcon)
-        emptyTitle = view.findViewById(R.id.emptyTitle)
-        emptySubtitle = view.findViewById(R.id.emptySubtitle)
+        recyclerView = v.findViewById(R.id.recyclerView)
+        swipeRefresh = v.findViewById(R.id.swipeRefresh)
+        emptyState = v.findViewById(R.id.emptyState)
+        loadingBar = v.findViewById(R.id.loadingBar)
+        emptyIcon = v.findViewById(R.id.emptyIcon)
+        emptyTitle = v.findViewById(R.id.emptyTitle)
+        emptySubtitle = v.findViewById(R.id.emptySubtitle)
 
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = adapter
@@ -51,7 +51,7 @@ class BookingsFragment : Fragment() {
         swipeRefresh.setOnRefreshListener { loadBookings() }
         loadBookings()
 
-        return view
+        return v
     }
 
     private fun loadBookings() {
@@ -100,6 +100,6 @@ class BookingsFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _view = null
+        _root = null
     }
 }
