@@ -3,7 +3,6 @@ package com.vetspa.nativeapp.service
 import android.util.Log
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import com.vetspa.nativeapp.BuildConfig
 import com.vetspa.nativeapp.data.api.ApiClient
 import com.vetspa.nativeapp.data.model.FcmTokenRequest
 import com.vetspa.nativeapp.util.NotifHelper
@@ -37,9 +36,6 @@ class FcmService : FirebaseMessagingService() {
     }
 
     private fun registerToken(token: String) {
-        if (BuildConfig.API_BASE_URL.contains("spa.vetmedia.vn")) {
-            Log.d(TAG, "Registering FCM token...")
-        }
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val resp = ApiClient.api.registerFcmToken(FcmTokenRequest(token))

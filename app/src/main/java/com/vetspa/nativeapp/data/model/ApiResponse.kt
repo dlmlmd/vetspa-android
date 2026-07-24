@@ -31,14 +31,19 @@ data class User(
 
 data class Booking(
     val id: Int,
-    @SerializedName("staff_id") val staffId: Int,
+    @SerializedName("staff_id") val staffId: Int? = null,
     @SerializedName("bed_id") val bedId: Int,
     @SerializedName("start_time") val startTime: String,
     @SerializedName("end_time") val endTime: String,
     val status: String,
     val note: String? = null,
     @SerializedName("staff_name") val staffName: String? = null,
+    @SerializedName("staff_position") val staffPosition: String? = null,
+    @SerializedName("staff_phone") val staffPhone: String? = null,
+    @SerializedName("staff_avatar") val staffAvatar: String? = null,
+    @SerializedName("package_id") val packageId: Int? = null,
     @SerializedName("package_name") val packageName: String? = null,
+    @SerializedName("package_price") val packagePrice: Double? = null,
     @SerializedName("customer_name") val customerName: String? = null
 )
 
@@ -62,6 +67,16 @@ data class Package(
     val summary: String? = null,
     val cover: String? = null,
     @SerializedName("is_active") val isActive: Boolean = true
+)
+
+data class UserPackage(
+    val id: Int,
+    @SerializedName("package_id") val packageId: Int,
+    @SerializedName("package_name") val packageName: String,
+    @SerializedName("sessions_remaining") val sessionsRemaining: Int,
+    val sessions: Int? = null,
+    val status: String? = null,
+    @SerializedName("purchased_at") val purchasedAt: String? = null
 )
 
 data class FcmTokenRequest(

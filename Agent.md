@@ -117,20 +117,64 @@
 
 ### ✅ Bước 7 — Native Login thật (Retrofit) (2026-07-24)
 
-- **ĐÃ XONG:** `activity_login.xml` — form Material Design OutlinedTextInput
-- **ĐÃ XONG:** `LoginActivity.kt` — Retrofit login + auto-save user/cookie
-- **ĐÃ XONG:** `VetSpaApi.kt` — login trả `Response<LoginResponse>` thay `ResponseBody`
-- **ĐÃ XONG:** `MyCookieJar.init()` trong `VetSpaApp.onCreate()`
-- **ĐÃ XONG:** Cookie đồng bộ Retrofit → WebView qua `syncCookiesToWebView()`
+- `activity_login.xml` — form Material Design OutlinedTextInput
+- `LoginActivity.kt` — Retrofit login + auto-save user/cookie
+- `VetSpaApi.kt` — login trả `Response<LoginResponse>` thay `ResponseBody`
+- `MyCookieJar.init()` trong `VetSpaApp.onCreate()`
+- Cookie đồng bộ Retrofit → WebView qua `syncCookiesToWebView()`
 - Staff login: mở browser ngoài (`staff_login.php`)
 - Lưu SharedPreferences: id, username, fullname, role, email, phone, profile_code
 
-### ⏳ Bước 8 — Native API screens (kế hoạch)
+### ✅ Bước 8 — Tách API Android riêng (android_* prefix) (2026-07-24)
 
-- Packages + Voucher + Booking screens gốc Kotlin
-- Kế toán charts (ApexCharts hoặc MPAndroidChart)
-- Deep link từ FCM notification
-- Hiện tại HomeFragment + BookingsFragment vẫn dùng WebView (chờ UI phức tạp)
+**Vấn đề:** Android app gọi thẳng API cũ (booking_api.php, staff_api.php...) gây rủi ro ảnh hưởng web workflows.
+
+**Giải pháp:** Tạo API file riêng với tiền tố `android_`, không sửa file gốc.
+
+**Files PHP backend mới (tại `D:\WinNMP\WWW\vetspa\api\`):**
+
+| File | Actions | Mô tả |
+|------|---------|-------|
+| `android_auth_api.php` | login, me, logout, register_fcm | Xác thực + FCM token |
+| `android_staff_api.php` | available, list | NV rảnh + danh sách |
+| `android_packages_api.php` | list, my | Gói dịch vụ + gói đã mua |
+| `android_booking_api.php` | my_bookings, available_beds, create, cancel, detail | Booking native |
+
+**Tính năng mới cho Android:**
+
+- **`action=my_bookings`**: nhóm theo ngày (DateGroup), trả `{date, items: [...]}`
+- **`action=available_beds`**: trả list giường trống cho [start, end] → client chặn trùng lớp 1
+- **`action=create`**: gọn nhẹ, không voucher/walk-in (giữ web ổn định)
+- **`action=detail`**: chi tiết booking + thông tin nhân viên
+
+**Cơ chế chống trùng booking (2 lớp):**
+1. **Client:** `available_beds` + `available_staff` → dropdown chỉ hiện options rảnh
+2. **Server:** conflict query `(user_id OR bed_id OR staff_id)` → 409 nếu trùng
+
+**Files Android sửa:**
+
+| File | Thay đổi |
+|------|----------|
+| `VetSpaApi.kt` | Gọi `android_*` endpoints + model mới (DateGroup, AvailableBedsResponse, ...) |
+| `LoginActivity.kt` | Dùng `@Body LoginRequest` thay `@Field` (JSON body) |
+| `FcmService.kt` | Gọi `android_auth_api?action=register_fcm` |
+| `ApiResponse.kt` | Thêm `UserPackage`, mở rộng `Booking` (packageId, packagePrice, staff*) |
+
+**Kiến trúc API mới:**
+```
+Android App → ApiClient.api.*()
+  → OkHttp + MyCookieJar
+    → spa.vetmedia.vn/api/android_*.php
+      → Session từ cookie (giống web)
+```
+
+**Hoàn toàn không ảnh hưởng:** booking_api.php, staff_api.php, packages_api.php, auth_api.php gốc.
+
+### ⏳ Bước 9 — Native Booking + Packages screens
+
+- HomeFragment + BookingsFragment → native RecyclerView thay WebView
+- Packages + Mua gói + Lịch sử native
+- 2 lớp conflict (available_beds API + server validation)
 
 ---
 

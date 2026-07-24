@@ -11,6 +11,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.vetspa.nativeapp.R
 import com.vetspa.nativeapp.data.api.ApiClient
+import com.vetspa.nativeapp.data.model.LoginRequest
 import com.vetspa.nativeapp.data.model.LoginResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -71,7 +72,7 @@ class LoginActivity : AppCompatActivity() {
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val resp = ApiClient.api.login(username, password)
+                val resp = ApiClient.api.login(LoginRequest(username, password))
                 withContext(Dispatchers.Main) {
                     if (resp.isSuccessful) {
                         val body = resp.body()
@@ -81,7 +82,6 @@ class LoginActivity : AppCompatActivity() {
                             showError(body?.error ?: "Đăng nhập thất bại")
                         }
                     } else {
-                        // Try to parse error from response body
                         val errorBody = resp.errorBody()?.string()
                         val msg = try {
                             val gson = com.google.gson.Gson()

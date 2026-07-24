@@ -1,6 +1,5 @@
 package com.vetspa.nativeapp.data.api
 
-import com.vetspa.nativeapp.BuildConfig
 import com.vetspa.nativeapp.data.model.*
 import okhttp3.OkHttpClient
 import retrofit2.Response
@@ -13,79 +12,134 @@ import java.util.concurrent.TimeUnit
 
 interface VetSpaApi {
 
-    // Auth
-    @POST("auth_api.php?action=login")
-    @FormUrlEncoded
+    // ==================== AUTH ====================
+    @POST("android_auth_api.php?action=login")
     suspend fun login(
-        @Field("username") username: String,
-        @Field("password") password: String
+        @Body body: LoginRequest
     ): Response<LoginResponse>
 
-    @GET("auth_api.php?action=me")
-    suspend fun me(): Response<User>
+    @GET("android_auth_api.php?action=me")
+    suspend fun me(): Response<LoginResponse>
 
-    @POST("auth_api.php?action=logout")
+    @POST("android_auth_api.php?action=logout")
     suspend fun logout(): Response<ApiResponse<Any>>
 
-    // Staff
-    @GET("staff_api.php?action=available")
+    @POST("android_auth_api.php?action=register_fcm")
+    suspend fun registerFcmToken(@Body body: FcmTokenRequest): Response<ApiResponse<Any>>
+
+    // ==================== STAFF ====================
+    @GET("android_staff_api.php?action=available")
     suspend fun getAvailableStaff(
         @Query("start") start: String,
         @Query("end") end: String
-    ): Response<ApiResponse<List<Staff>>>
+    ): Response<StaffResponse>
 
-    // Bookings
-    @GET("booking_api.php?action=my")
-    suspend fun getMyBookings(
-        @Query("date") date: String? = null
-    ): Response<ApiResponse<List<Booking>>>
+    @GET("android_staff_api.php?action=list")
+    suspend fun getStaffList(): Response<StaffListResponse>
 
-    @POST("booking_api.php?action=create")
-    @FormUrlEncoded
-    suspend fun createBooking(
-        @Field("staff_id") staffId: Int,
-        @Field("bed_id") bedId: Int,
-        @Field("start_time") startTime: String,
-        @Field("end_time") endTime: String,
-        @Field("package_id") packageId: Int? = null,
-        @Field("note") note: String? = null
-    ): Response<ApiResponse<Booking>>
+    // ==================== BOOKINGS ====================
+    @GET("android_booking_api.php?action=my_bookings")
+    suspend fun getMyBookings(): Response<MyBookingsResponse>
 
-    // Packages
-    @GET("packages_api.php?action=list")
-    suspend fun getPackages(): Response<ApiResponse<List<Package>>>
+    @GET("android_booking_api.php?action=available_beds")
+    suspend fun getAvailableBeds(
+        @Query("start") start: String,
+        @Query("end") end: String
+    ): Response<AvailableBedsResponse>
 
-    @GET("packages_api.php?action=my")
-    suspend fun getMyPackages(): Response<ApiResponse<List<UserPackage>>>
+    @POST("android_booking_api.php?action=create")
+    suspend fun createBooking(@Body body: CreateBookingRequest): Response<CreateBookingResponse>
 
-    // FCM
-    @POST("fcm_api.php?action=register")
-    suspend fun registerFcmToken(@Body body: FcmTokenRequest): Response<ApiResponse<Any>>
+    @POST("android_booking_api.php?action=cancel")
+    suspend fun cancelBooking(@Body body: CancelBookingRequest): Response<ApiResponse<Any>>
 
-    // Notifications
-    @GET("notification_api.php?action=poll")
-    suspend fun pollNotifications(): Response<ApiResponse<NotificationResponse>>
+    @GET("android_booking_api.php?action=detail")
+    suspend fun getBookingDetail(
+        @Query("id") id: Int
+    ): Response<BookingDetailResponse>
+
+    // ==================== PACKAGES ====================
+    @GET("android_packages_api.php?action=list")
+    suspend fun getPackages(): Response<PackagesListResponse>
+
+    @GET("android_packages_api.php?action=my")
+    suspend fun getMyPackages(): Response<MyPackagesResponse>
 }
 
-data class UserPackage(
-    val id: Int,
+// ==================== REQUEST MODELS ====================
+
+data class CreateBookingRequest(
+    @SerializedName("staff_id") val staffId: Int,
+    @SerializedName("bed_id") val bedId: Int,
+    @SerializedName("start_time") val startTime: String,
+    @SerializedName("end_time") val endTime: String,
     @SerializedName("package_id") val packageId: Int,
-    @SerializedName("package_name") val packageName: String,
-    @SerializedName("sessions_remaining") val sessionsRemaining: Int,
-    @SerializedName("sessions") val sessions: Int,
-    val status: String
+    val note: String? = null
 )
 
-data class NotificationResponse(
-    val unread: Int,
-    val notifications: List<Notification>? = null
+data class CancelBookingRequest(
+    @SerializedName("booking_id") val bookingId: Int
 )
 
-data class Notification(
-    val id: Int,
-    val title: String,
-    val message: String
+// ==================== RESPONSE MODELS ====================
+
+data class StaffResponse(
+    val ok: Boolean,
+    val staff: List<Staff>? = null,
+    @SerializedName("busy_staff_ids") val busyStaffIds: List<Int>? = null,
+    val error: String? = null
 )
+
+data class StaffListResponse(
+    val ok: Boolean,
+    val staff: List<Staff>? = null,
+    val error: String? = null
+)
+
+data class MyBookingsResponse(
+    val ok: Boolean,
+    val bookings: List<DateGroup>? = null,
+    val error: String? = null
+)
+
+data class DateGroup(
+    val date: String,
+    val items: List<Booking>
+)
+
+data class AvailableBedsResponse(
+    val ok: Boolean,
+    val beds: List<Int>? = null,
+    @SerializedName("total_beds") val totalBeds: Int = 4,
+    @SerializedName("booked_beds") val bookedBeds: List<Int>? = null,
+    val error: String? = null
+)
+
+data class CreateBookingResponse(
+    val ok: Boolean,
+    val booking: Booking? = null,
+    val error: String? = null
+)
+
+data class BookingDetailResponse(
+    val ok: Boolean,
+    val booking: Booking? = null,
+    val error: String? = null
+)
+
+data class PackagesListResponse(
+    val ok: Boolean,
+    val packages: List<Package>? = null,
+    val error: String? = null
+)
+
+data class MyPackagesResponse(
+    val ok: Boolean,
+    val packages: List<UserPackage>? = null,
+    val error: String? = null
+)
+
+// ==================== API CLIENT ====================
 
 object ApiClient {
     private val okHttp = OkHttpClient.Builder()
