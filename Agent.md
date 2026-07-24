@@ -127,6 +127,82 @@
 
 ### ✅ Bước 8 — Tách API Android riêng (android_* prefix) (2026-07-24)
 
+**Fix lỗi (2026-07-24 CI):**
+- Thiếu `import BuildConfig` trong VetSpaApi.kt
+- Thiếu `swiperefreshlayout` dependency
+- `DateGroup` ở sai package
+- `val view` xung đột Fragment.getView()
+- **Kết quả:** Build APK thành công sau 4 fix commit
+
+### ✅ Bước 9 — Native HomeFragment + BookingDetail + BookingForm (2026-07-24)
+
+**Mục tiêu:** Loại bỏ WebView hoàn toàn, tất cả màn hình native.
+
+**HomeFragment** (thay WebView `index.php`):
+| UI Element | Source |
+|------------|--------|
+| Lời chào + tên user | SharedPreferences |
+| Card "Gói còn lại" | `android_packages_api.php?action=my` → sum sessions_remaining |
+| Card "Lịch hôm nay" | `android_booking_api.php?action=my_bookings` → count today |
+| Lịch tiếp theo | `my_bookings` → filter future, sort asc, lấy đầu |
+| Nút "Đặt lịch ngay" | mở BookingFormSheet |
+
+**BookingDetailSheet** (BottomSheetDialogFragment):
+- Click booking từ danh sách → xem chi tiết (giờ, NV, giường, gói, status, note)
+- Nút "Huỷ lịch" nếu pending → gọi `android_booking_api.php?action=cancel`
+- Refresh danh sách sau khi huỷ
+
+**BookingFormSheet** (BottomSheetDialogFragment):
+- DatePicker + TimePicker (bước 15 phút)
+- End time tự động = start + duration
+- RadioGroup giường: chỉ enable giường trống từ `available_beds`
+- RadioGroup nhân viên: chỉ hiển thị NV rảnh từ `available_staff` (⭐ yêu thích đầu)
+- RadioGroup gói: từ `my_packages` API
+- Ghi chú text input
+- Submit → `android_booking_api.php?action=create` → server validate lần cuối
+
+**Cơ chế chống trùng 2 lớp (đã triển khai):**
+```
+┌─────────────────────────────────────────────────────────┐
+│ Lớp 1 (Client-side — chặn ngay trên form)               │
+│ 1. User chọn ngày + giờ                                  │
+│ 2. Gọi available_beds → disable giường đã book          │
+│ 3. Gọi available_staff → chỉ hiển thị NV rảnh           │
+│ 4. User chỉ chọn được options khả dụng                   │
+└─────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────┐
+│ Lớp 2 (Server-side — backup)                            │
+│ 5. Server conflict query (user_id OR bed_id OR staff_id) │
+│ 6. Nếu 2 người submit cùng lúc → 409 Conflict           │
+└─────────────────────────────────────────────────────────┘
+```
+
+**Files mới/tạo:**
+
+| File | Type | Mô tả |
+|------|------|-------|
+| `res/layout/fragment_home.xml` | Layout | Dashboard greeting + 2 cards + next booking + nút ĐL |
+| `ui/HomeFragment.kt` | Fragment | Load API, bind data, mở booking form |
+| `res/layout/bottom_sheet_booking_detail.xml` | Layout | Table chi tiết (giờ, NV, giường, gói, status, note) |
+| `ui/BookingDetailSheet.kt` | BottomSheet | Load detail API, huỷ booking |
+| `res/layout/bottom_sheet_booking_form.xml` | Layout | Form đầy đủ (date/time/staff/bed/package/note) |
+| `ui/BookingFormSheet.kt` | BottomSheet | Pickers + RadioGroups + submit + 2 lớp conflict |
+
+**App hiện tại — 100% native, 0 WebView:**
+```
+MainActivity (BottomNavigation)
+├── HomeFragment (native dashboard + nút đặt lịch)
+├── BookingsFragment (native RecyclerView + detail sheet)
+└── ProfileFragment (native thông tin + logout)
+```
+
+**Kiến trúc đồng bộ:** `MyCookieJar (SharedPreferences)` ↔ Retrofit ↔ WebView (không còn WebView, giữ CookieJar cho session API)
+
+**Kế hoạch tiếp theo:**
+- Packages screen: danh sách gói + mua gói native
+- Notification polling: WorkManager → native notification
+- Deep link từ FCM push
+
 **Vấn đề:** Android app gọi thẳng API cũ (booking_api.php, staff_api.php...) gây rủi ro ảnh hưởng web workflows.
 
 **Giải pháp:** Tạo API file riêng với tiền tố `android_`, không sửa file gốc.
